@@ -1,13 +1,10 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
+import 'better_name.dart';
 import 'get_dir.dart';
 import 'logger.dart';
 
-const Uuid uuid = Uuid();
-
-/// Downloads a file, assigns a unique filename, and caches it.
+/// Downloads a file, saves it with a unique name, and caches it.
 Future<File> downloadFile(
   bool showLog,
   String url,
@@ -38,7 +35,6 @@ Future<File> downloadFile(
       response.data!,
       extFile,
       folder,
-      ttl,
     );
 
     if (showLog) {
@@ -54,37 +50,30 @@ Future<File> downloadFile(
   }
 }
 
-/// Saves file to cache with a UUID filename.
+/// Saves file to cache with a recognizable name.
 Future<File> saveToCache(
   bool showLog,
   String url,
   List<int> data,
   String extFile,
   String folder,
-  int ttl,
 ) async {
   String cacheDir = await getCacheDirectory(folder);
   Directory(cacheDir).createSync(recursive: true);
 
-  // Generate a UUID filename
-  String uuidFileName = '${uuid.v4()}.$extFile';
-  String filePath = '$cacheDir/$uuidFileName';
+  // Use encoded URL as filename
+  String generateName = encodeFileName(url);
+  String fileName = '$generateName.$extFile';
+  String filePath = '$cacheDir/$fileName';
   File file = File(filePath);
 
   // Write file
   await file.writeAsBytes(data);
 
-  // Save cache metadata
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  int expiryTimestamp = DateTime.now().millisecondsSinceEpoch + (ttl * 1000);
-  await prefs.setString('DioCache_${folder}_$url', uuidFileName);
-  await prefs.setInt('DioCacheExpiry_${folder}_$url', expiryTimestamp);
-
   if (showLog) {
-    DateTime expiryTime = DateTime.fromMillisecondsSinceEpoch(expiryTimestamp);
-    Logger.log('📌 Cached file: $uuidFileName');
+    Logger.log('📌 Cached file: $fileName');
     Logger.log('📂 Saved in folder: $folder');
-    Logger.log('⏳ Cache expiry: $expiryTime (${ttl}s from now)');
+    Logger.log('⏳ File modified time set to: ${file.lastModifiedSync()}');
   }
 
   return file;

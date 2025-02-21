@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:dio_cache_ttl/dio_cache_ttl.dart';
 
 void main() async {

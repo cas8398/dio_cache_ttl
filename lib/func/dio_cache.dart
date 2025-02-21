@@ -41,11 +41,18 @@ Future<File> dioCache(
   if (showLog && kDebugMode) {
     Logger.log('Clearing expired cache for folder: $folder');
   }
-  await clearExpiredCache(showLog, folder); // Clear expired cache dynamically
+  await clearExpiredCache(
+      showLog, ttlInSeconds, folder); // Clear expired cache dynamically
 
-  await checkCachedFile(showLog, url, extFile);
+  // Check if cached file exists and is valid
+  File? cachedFile =
+      await checkCachedFile(showLog, url, folder!, ttlInSeconds, extFile);
+  if (cachedFile != null) {
+    if (showLog) Logger.log('✅ Using cached file: ${cachedFile.path}');
+    return cachedFile;
+  }
 
   // Download and store file
-  return await downloadFile(showLog, url, extFile, folder!, ttlInSeconds,
+  return await downloadFile(showLog, url, extFile, folder, ttlInSeconds,
       dio: dio);
 }
