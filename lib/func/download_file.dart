@@ -81,8 +81,10 @@ Future<File> saveToCache(
   await prefs.setInt('DioCacheExpiry_${folder}_$url', expiryTimestamp);
 
   if (showLog) {
-    Logger.log('✅ File cached: $uuidFileName');
-    Logger.warn('🕒 Cache expiry set for: $url');
+    DateTime expiryTime = DateTime.fromMillisecondsSinceEpoch(expiryTimestamp);
+    Logger.log('📌 Cached file: $uuidFileName');
+    Logger.log('📂 Saved in folder: $folder');
+    Logger.log('⏳ Cache expiry: $expiryTime (${ttl}s from now)');
   }
 
   return file;

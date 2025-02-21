@@ -27,15 +27,21 @@ Future<void> clearExpiredCache(bool showLog, [String? folder]) async {
     }
 
     int? expiryTimestamp = prefs.getInt(key);
+    Logger.log(
+        '🔍 Checking cache key: $key with expiry: $expiryTimestamp (Now: $now)');
+
     if (expiryTimestamp == null || expiryTimestamp < now) {
       String urlKey = key.replaceFirst('DioCacheExpiry_', 'DioCache_');
       String? cachedFileName = prefs.getString(urlKey);
 
       if (cachedFileName != null) {
         File cachedFile = File('${cacheDir.path}/$cachedFileName');
+        Logger.log(
+            '🔍 Checking file: ${cachedFile.path} - Exists: ${cachedFile.existsSync()}');
+
         if (cachedFile.existsSync()) {
           try {
-            cachedFile.deleteSync();
+            await cachedFile.delete();
             if (showLog) {
               Logger.log('🗑️ Deleted expired cache: ${cachedFile.path}');
             }
