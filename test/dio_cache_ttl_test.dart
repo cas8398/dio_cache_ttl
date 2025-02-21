@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio_cache_ttl/dio_cache_ttl.dart';
 
 class MockDio extends Mock implements Dio {}
@@ -15,8 +14,6 @@ void main() {
   late MockDio mockDio;
 
   setUpAll(() async {
-    SharedPreferences.setMockInitialValues({});
-
     // Mock `getTemporaryDirectory`
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
