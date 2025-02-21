@@ -52,6 +52,7 @@ void main() {
 
     File file = await dioCache(
       "https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf",
+      extFile: "pdf",
       ttl: Duration(seconds: 10),
       dio: mockDio, // Pass the mocked Dio instance
     );

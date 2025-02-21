@@ -3,8 +3,7 @@ import 'package:path_provider/path_provider.dart';
 
 Future<String> getCacheDirectory(String? subFolder) async {
   Directory tempDir = await getTemporaryDirectory();
-  String dirPath =
-      subFolder != null ? '${tempDir.path}/$subFolder' : tempDir.path;
+  String dirPath = '${tempDir.path}/Dio_Cache/$subFolder';
 
   Directory dir = Directory(dirPath);
   if (!dir.existsSync()) {

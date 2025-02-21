@@ -8,7 +8,7 @@ void main() async {
   const cacheDuration = Duration(minutes: 5);
 
   try {
-    File file = await dioCache(url, ttl: cacheDuration);
+    File file = await dioCache(url, extFile: "pdf", ttl: cacheDuration);
     print('File downloaded and cached at: ${file.path}');
   } catch (e) {
     print('Error: $e');
