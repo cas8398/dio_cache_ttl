@@ -1,43 +1,63 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# dio_cache_ttl
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf
-
----
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+A Flutter package for caching files using Dio with Time-to-Live (TTL) support.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Cache files locally with a specified TTL.
+- Uses `Dio` for downloading.
+- Automatically clears expired cache.
+- Supports custom cache directories.
 
-## Getting started
+## Installation
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add this to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  dio_cache_ttl:
+    git:
+      url: https://github.com/YOUR_GITHUB_USERNAME/dio_cache_ttl.git
+```
+
+Or add via CLI:
+
+```sh
+flutter pub add dio_cache_ttl
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+### Import the package
 
 ```dart
-const like = 'sample';
+import 'package:dio_cache_ttl/dio_cache_ttl.dart';
 ```
 
-## Additional information
+### Cache a file
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```dart
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:dio_cache_ttl/dio_cache_ttl.dart';
+
+void main() async {
+  File file = await dioCache(
+    "https://example.com/sample.pdf",
+    ttl: Duration(hours: 1), // Cache for 1 hour
+  );
+  print("File saved at: ${file.path}");
+}
+```
+
+## Testing
+
+Run tests using:
+
+```sh
+flutter test
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
