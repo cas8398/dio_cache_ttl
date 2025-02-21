@@ -1,21 +1,22 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import 'get_dir.dart';
 import 'logger.dart';
 
-/// Function to download a file and save it
+const Uuid uuid = Uuid();
+
+/// Downloads a file, assigns a unique filename, and caches it.
 Future<File> downloadFile(
-  bool showLog, // Logging flag
+  bool showLog,
   String url,
-  String extFile, // Required file extension (e.g., jpg, png, pdf)
-  File file,
+  String extFile,
   String folder,
-  String fileName,
   int ttl, {
-  Dio? dio, // Inject Dio for testing
+  Dio? dio,
 }) async {
-  dio ??= Dio(); // Use existing Dio instance or create a new one
+  dio ??= Dio();
 
   if (showLog) {
     Logger.log('📥 Downloading: $url');
@@ -26,47 +27,25 @@ Future<File> downloadFile(
       url,
       options: Options(
         responseType: ResponseType.bytes,
-        followRedirects: true, // Follow redirects properly
+        followRedirects: true,
       ),
     );
 
-    // Get the final redirected URL
-    Uri finalUri = response.realUri;
-
-    // Try to extract filename from Content-Disposition header
-    String? newFileName = _extractFileName(response);
-
-    // If no filename found, try from URL
-    if (newFileName == null || newFileName.isEmpty) {
-      newFileName = p.basename(finalUri.path);
-    }
-
-    // Ensure file extension is correct
-    if (!newFileName.contains('.')) {
-      newFileName = '$newFileName.$extFile'; // Use provided extension
-    }
-
-    // Construct the final file path
-    String finalFilePath = '${file.parent.path}/$newFileName';
-    File finalFile = File(finalFilePath);
-
-    // Save file
-    await finalFile.writeAsBytes(response.data!);
+    // Save file to cache
+    File cachedFile = await saveToCache(
+      showLog,
+      url,
+      response.data!,
+      extFile,
+      folder,
+      ttl,
+    );
 
     if (showLog) {
-      Logger.log('✅ File saved: $finalFilePath');
+      Logger.log('✅ File saved: ${cachedFile.path}');
     }
 
-    // Store cache expiry in SharedPreferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int expiryTimestamp = DateTime.now().millisecondsSinceEpoch + (ttl * 1000);
-    await prefs.setInt('DioCache_${folder}_$newFileName', expiryTimestamp);
-
-    if (showLog) {
-      Logger.warn('🕒 Cache expiry set for: $newFileName');
-    }
-
-    return finalFile;
+    return cachedFile;
   } catch (e) {
     if (showLog) {
       Logger.error('❌ Failed to download: $e');
@@ -75,13 +54,36 @@ Future<File> downloadFile(
   }
 }
 
-/// Extracts filename from `Content-Disposition` header if available
-String? _extractFileName(Response response) {
-  String? contentDisposition = response.headers.value('content-disposition');
-  if (contentDisposition != null && contentDisposition.contains('filename=')) {
-    final match =
-        RegExp(r'filename="?([^"]+)"?').firstMatch(contentDisposition);
-    return match?.group(1);
+/// Saves file to cache with a UUID filename.
+Future<File> saveToCache(
+  bool showLog,
+  String url,
+  List<int> data,
+  String extFile,
+  String folder,
+  int ttl,
+) async {
+  String cacheDir = await getCacheDirectory(folder);
+  Directory(cacheDir).createSync(recursive: true);
+
+  // Generate a UUID filename
+  String uuidFileName = '${uuid.v4()}.$extFile';
+  String filePath = '$cacheDir/$uuidFileName';
+  File file = File(filePath);
+
+  // Write file
+  await file.writeAsBytes(data);
+
+  // Save cache metadata
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  int expiryTimestamp = DateTime.now().millisecondsSinceEpoch + (ttl * 1000);
+  await prefs.setString('DioCache_${folder}_$url', uuidFileName);
+  await prefs.setInt('DioCacheExpiry_${folder}_$url', expiryTimestamp);
+
+  if (showLog) {
+    Logger.log('✅ File cached: $uuidFileName');
+    Logger.warn('🕒 Cache expiry set for: $url');
   }
-  return null;
+
+  return file;
 }

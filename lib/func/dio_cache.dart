@@ -2,10 +2,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import 'get_dir.dart';
-import 'get_file.dart';
 import 'download_file.dart';
 import 'clear_cache.dart';
+import 'check_cache.dart';
 import 'logger.dart';
 
 /// Downloads and caches a file with the specified extension.
@@ -44,29 +43,9 @@ Future<File> dioCache(
   }
   await clearExpiredCache(showLog, folder); // Clear expired cache dynamically
 
-  String dir = await getCacheDirectory(folder);
-  String fileName = Uri.parse(url).pathSegments.last;
-  File file = File('$dir/$fileName');
-
-  if (showLog && kDebugMode) {
-    Logger.log('Checking cache for file: $fileName');
-  }
-
-  // Check if cached file exists
-  File? cachedFile = await getCachedFile(file, folder!, fileName, ttlInSeconds);
-  if (cachedFile != null) {
-    if (showLog && kDebugMode) {
-      Logger.log('Cache hit: Returning cached file: $fileName');
-    }
-    return cachedFile; // Return cached file if still valid
-  }
-
-  if (showLog && kDebugMode) {
-    Logger.error('Cache miss: Downloading file: $fileName');
-  }
+  await checkCachedFile(showLog, url, extFile);
 
   // Download and store file, and update cache expiry
-  return await downloadFile(
-      showLog, url, extFile, file, folder, fileName, ttlInSeconds,
+  return await downloadFile(showLog, url, extFile, folder!, ttlInSeconds,
       dio: dio);
 }

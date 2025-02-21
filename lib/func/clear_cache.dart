@@ -6,7 +6,7 @@ import 'logger.dart';
 /// Clears expired cache files in the specified folder.
 Future<void> clearExpiredCache(bool showLog, [String? folder]) async {
   Directory baseDir = await getTemporaryDirectory();
-  final cacheDir = Directory('${baseDir.path}/DioCache/$folder');
+  final cacheDir = Directory('${baseDir.path}/Dio_Cache/$folder');
 
   if (!cacheDir.existsSync()) {
     if (showLog) {
@@ -17,21 +17,48 @@ Future<void> clearExpiredCache(bool showLog, [String? folder]) async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   int now = DateTime.now().millisecondsSinceEpoch;
+  List<String> keysToRemove = [];
 
-  for (var file in cacheDir.listSync()) {
-    String fileName = file.uri.pathSegments.last;
-    int? expiryTimestamp = prefs.getInt('DioCache_${folder}_$fileName');
+  // Iterate over all keys in SharedPreferences
+  for (String key in prefs.getKeys()) {
+    if (!key.startsWith('DioCacheExpiry_') ||
+        (folder != null && !key.contains('_$folder'))) {
+      continue; // Ignore unrelated keys
+    }
 
+    int? expiryTimestamp = prefs.getInt(key);
     if (expiryTimestamp == null || expiryTimestamp < now) {
-      try {
-        file.deleteSync();
-        prefs.remove('DioCache_${folder}_$fileName'); // Remove expired entry
-        if (showLog) Logger.log('🗑️ Deleted expired cache: ${file.path}');
-      } catch (e) {
-        if (showLog) Logger.error('❌ Error deleting file: ${file.path}', e);
+      String urlKey = key.replaceFirst('DioCacheExpiry_', 'DioCache_');
+      String? cachedFileName = prefs.getString(urlKey);
+
+      if (cachedFileName != null) {
+        File cachedFile = File('${cacheDir.path}/$cachedFileName');
+        if (cachedFile.existsSync()) {
+          try {
+            cachedFile.deleteSync();
+            if (showLog) {
+              Logger.log('🗑️ Deleted expired cache: ${cachedFile.path}');
+            }
+          } catch (e) {
+            if (showLog) {
+              Logger.error('❌ Error deleting file: ${cachedFile.path}', e);
+            }
+          }
+        }
       }
+
+      // Mark keys for removal
+      keysToRemove.add(key);
+      keysToRemove.add(urlKey);
     }
   }
 
-  if (showLog) Logger.log('✅ Cache cleanup completed in: ${cacheDir.path}');
+  // Remove expired keys from SharedPreferences
+  for (String key in keysToRemove) {
+    prefs.remove(key);
+  }
+
+  if (showLog) {
+    Logger.log('✅ Cache cleanup completed for folder: ${cacheDir.path}');
+  }
 }
