@@ -5,15 +5,15 @@ class Logger {
   static const int _maxLength = 300; // Limit log length for long messages
 
   static void log(dynamic message) {
-    _printLog('📝 LOG', message);
+    _printLog('📝 LOG ○ DioCache', message);
   }
 
   static void warn(dynamic message) {
-    _printLog('⚠️ WARNING', message);
+    _printLog('⚠️ WARN ○ DioCache', message);
   }
 
   static void error(dynamic message, [Object? error, StackTrace? stackTrace]) {
-    _printLog('❌ ERROR', message);
+    _printLog('❌ ERR ○ DioCache', message);
     if (kDebugMode) {
       if (error != null) print('🔴 Error: $error');
       if (stackTrace != null) print('📜 StackTrace: $stackTrace');

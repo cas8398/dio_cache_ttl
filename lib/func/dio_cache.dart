@@ -40,7 +40,7 @@ Future<File> dioCache(
   int ttlInSeconds = ttl.inSeconds; // Convert Duration to seconds
 
   if (showLog && kDebugMode) {
-    Logger.log('[DioCache] Clearing expired cache for folder: $folder');
+    Logger.log('Clearing expired cache for folder: $folder');
   }
   await clearExpiredCache(showLog, folder); // Clear expired cache dynamically
 
@@ -49,20 +49,20 @@ Future<File> dioCache(
   File file = File('$dir/$fileName');
 
   if (showLog && kDebugMode) {
-    Logger.log('[DioCache] Checking cache for file: $fileName');
+    Logger.log('Checking cache for file: $fileName');
   }
 
   // Check if cached file exists
   File? cachedFile = await getCachedFile(file, folder!, fileName, ttlInSeconds);
   if (cachedFile != null) {
     if (showLog && kDebugMode) {
-      Logger.log('[DioCache] Cache hit: Returning cached file: $fileName');
+      Logger.log('Cache hit: Returning cached file: $fileName');
     }
     return cachedFile; // Return cached file if still valid
   }
 
   if (showLog && kDebugMode) {
-    Logger.error('[DioCache] Cache miss: Downloading file: $fileName');
+    Logger.error('Cache miss: Downloading file: $fileName');
   }
 
   // Download and store file, and update cache expiry
