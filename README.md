@@ -17,7 +17,7 @@ Add this to your `pubspec.yaml`:
 dependencies:
   dio_cache_ttl:
     git:
-      url: https://github.com/YOUR_GITHUB_USERNAME/dio_cache_ttl.git
+      url: https://github.com/cas8938/dio_cache_ttl.git
 ```
 
 Or add via CLI:
@@ -38,12 +38,12 @@ import 'package:dio_cache_ttl/dio_cache_ttl.dart';
 
 ```dart
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:dio_cache_ttl/dio_cache_ttl.dart';
 
 void main() async {
   File file = await dioCache(
     "https://example.com/sample.pdf",
+    extFile: "pdf",
     ttl: Duration(hours: 1), // Cache for 1 hour
   );
   print("File saved at: ${file.path}");
