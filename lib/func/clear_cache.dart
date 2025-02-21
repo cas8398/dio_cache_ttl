@@ -6,7 +6,7 @@ import 'logger.dart';
 /// Clears expired cache files in the specified folder.
 Future<void> clearExpiredCache(bool showLog, [String? folder]) async {
   Directory baseDir = await getTemporaryDirectory();
-  final cacheDir = Directory('${baseDir.path}/Dio_Cache/$folder');
+  final cacheDir = Directory('${baseDir.path}/DioCache/$folder');
 
   if (!cacheDir.existsSync()) {
     if (showLog) {

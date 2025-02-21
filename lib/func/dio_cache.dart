@@ -45,7 +45,7 @@ Future<File> dioCache(
 
   await checkCachedFile(showLog, url, extFile);
 
-  // Download and store file, and update cache expiry
+  // Download and store file
   return await downloadFile(showLog, url, extFile, folder!, ttlInSeconds,
       dio: dio);
 }
