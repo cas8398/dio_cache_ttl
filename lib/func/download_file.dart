@@ -60,7 +60,7 @@ Future<File> downloadFile(
     // Store cache expiry in SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int expiryTimestamp = DateTime.now().millisecondsSinceEpoch + (ttl * 1000);
-    await prefs.setInt('dio_cache_${folder}_$newFileName', expiryTimestamp);
+    await prefs.setInt('DioCache_${folder}_$newFileName', expiryTimestamp);
 
     if (showLog) {
       Logger.warn('🕒 Cache expiry set for: $newFileName');
