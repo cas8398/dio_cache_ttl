@@ -1,9 +1,9 @@
-## 0.3.1 - [2025-01-22]
+## 0.3.3
 
 ### Added
 
 - Implemented caching system for Dio with TTL (Time-To-Live).
-- Supports local file caching using `path_provider`.
+- Supports local file caching using path_provider.
 - Added shared preferences support for metadata storage.
 - Configurable cache folder and expiration time.
 - Logging support for debugging.
