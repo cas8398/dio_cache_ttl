@@ -1,6 +1,6 @@
 # dio_cache_ttl
 
-A Dio-based caching solution with Time-to-Live (TTL) support, enabling efficient storage and retrieval of HTTP responses using the file system. Ideal for optimizing network performance and reducing redundant requests.
+A library caching solution with Time-to-Live (TTL) support, enabling efficient storage and retrieval of HTTP responses using the file system. Ideal for optimizing network performance and reducing redundant requests.
 
 ## Features
 
