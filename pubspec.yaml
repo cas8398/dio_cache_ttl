@@ -1,6 +1,6 @@
 name: dio_cache_ttl
 description: A Dio-based caching solution with Time-to-Live (TTL) support, enabling efficient storage and retrieval of HTTP responses using the file system. Ideal for optimizing network performance and reducing redundant requests.
-version: 0.3.3 # Increment version (e.g., minor update)
+version: 0.3.2
 homepage: https://github.com/cas8398/dio_cache_ttl
 repository: https://github.com/cas8398/dio_cache_ttl
 issue_tracker: https://github.com/cas8398/dio_cache_ttl/issues
