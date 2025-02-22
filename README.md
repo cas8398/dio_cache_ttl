@@ -4,10 +4,10 @@ A Dio-based caching solution with Time-to-Live (TTL) support, enabling efficient
 
 ## Features
 
-✅ Cache files locally with a specified TTL
-✅ Uses Dio for efficient downloading
-✅ Automatically clears expired cache
-✅ Supports custom cache directories
+- ✅ Cache files locally with a specified TTL
+- ✅ Uses Dio for efficient downloading
+- ✅ Automatically clears expired cache
+- ✅ Supports custom cache directories
 
 ## Installation
 
